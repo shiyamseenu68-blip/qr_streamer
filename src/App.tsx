@@ -72,7 +72,7 @@ export default function App() {
     formData.append('requireConfirmation', String(settings.requireConfirmation));
 
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', '/api', true);
+    xhr.open('POST', '/api/files/upload', true);
 
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) {

@@ -58,7 +58,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({ fileId, onGoHome }) => {
       try {
         setLoading(true);
         setError(null);
-        const res = await fetch(`/api/${fileId}`);
+        const res = await fetch(`/api/files/${fileId}`);
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
           throw new Error(errData.error || 'File not found');
@@ -87,7 +87,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({ fileId, onGoHome }) => {
   useEffect(() => {
     if (file && file.category === 'text' && confirmed && !file.isExpired && !file.isDeleted) {
       setLoadingText(true);
-      fetch(`/api/${file.id}/raw`)
+      fetch(`/api/files/${file.id}/raw`)
         .then((res) => res.text())
         .then((text) => setTextContent(text))
         .catch((err) => console.error('Error fetching text file:', err))
@@ -95,8 +95,8 @@ export const FileViewer: React.FC<FileViewerProps> = ({ fileId, onGoHome }) => {
     }
   }, [file, confirmed]);
 
-  const rawFileUrl = `/api/${fileId}/raw`;
-  const downloadUrl = `/api/${fileId}/raw?download=true`;
+  const rawFileUrl = `/api/files/${fileId}/raw`;
+  const downloadUrl = `/api/files/${fileId}/raw?download=true`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);

@@ -45,7 +45,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
 
     if (local.length > 0) {
       setLoading(true);
-      fetch('/api/history', {
+      fetch('/api/files/history', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -81,7 +81,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
     e.stopPropagation();
     if (confirm(`Delete shared file "${item.originalName}" permanently?`)) {
       try {
-        await fetch(`/api/${item.id}`, {
+        await fetch(`/api/files/${item.id}`, {
           method: 'DELETE',
           headers: { 'x-owner-token': item.ownerToken },
         });

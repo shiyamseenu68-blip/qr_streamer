@@ -330,7 +330,7 @@ app.get(['/api/health', '/health'], (_req, res) => {
 });
 
 // 2. File Upload Route (Placed before express.json body parser to prevent stream pre-consumption)
-app.post(['/api/files/upload', '/files/upload', '/upload', '/api/upload'], async (req, res) => {
+app.post(['/api/files/upload', '/api/upload'], async (req, res) => {
   const reqUrl = req.originalUrl || req.url;
   const contentType = req.headers['content-type'] || 'unknown';
   const contentLength = req.headers['content-length'] || 'unknown';
