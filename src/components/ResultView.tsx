@@ -99,7 +99,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
     if (!file.ownerToken) return;
     setIsSavingSettings(true);
     try {
-      const res = await fetch(`/api/${file.id}`, {
+      const res = await fetch(`/api/files/${file.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -130,7 +130,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
     if (!file.ownerToken) return;
     setIsDeleting(true);
     try {
-      const res = await fetch(`/api/${file.id}`, {
+      const res = await fetch(`/api/files/${file.id}`, {
         method: 'DELETE',
         headers: {
           'x-owner-token': file.ownerToken,
