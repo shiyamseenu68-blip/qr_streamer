@@ -39,22 +39,30 @@ async function uploadFileToCloud(fileBuffer: Buffer, fileName: string, mimeType:
     formData.append('time', '72h');
     formData.append('fileToUpload', blob, fileName || 'file');
 
+    console.log('[CLOUD FILE UPLOAD] Attempting to upload file to cloud storage:', fileName);
+    
     const res = await fetch('https://litterbox.catbox.moe/resources/internals/api.php', {
       method: 'POST',
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) QRVault/1.0',
       },
       body: formData,
-      signal: AbortSignal.timeout(6000),
+      signal: AbortSignal.timeout(10000),
     });
+    
+    console.log('[CLOUD FILE UPLOAD] Response status:', res.status);
+    
     if (res.ok) {
       const url = (await res.text()).trim();
+      console.log('[CLOUD FILE UPLOAD] Cloud URL received:', url);
       if (url.startsWith('http')) {
         return url;
       }
+    } else {
+      console.log('[CLOUD FILE UPLOAD] Response not OK:', res.status, res.statusText);
     }
   } catch (e: any) {
-    console.warn('[CLOUD FILE UPLOAD WARN]', e?.message || String(e));
+    console.error('[CLOUD FILE UPLOAD ERROR]', e?.message || String(e));
   }
   return null;
 }
@@ -68,23 +76,33 @@ async function saveMetaToCloud(record: any): Promise<string | null> {
     formData.append('time', '72h');
     formData.append('fileToUpload', blob, 'metadata.json');
 
+    console.log('[CLOUD SAVE] Attempting to upload metadata to cloud storage');
+    
     const res = await fetch('https://litterbox.catbox.moe/resources/internals/api.php', {
       method: 'POST',
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) QRVault/1.0',
       },
       body: formData,
-      signal: AbortSignal.timeout(6000),
+      signal: AbortSignal.timeout(10000),
     });
+    
+    console.log('[CLOUD SAVE] Response status:', res.status);
+    
     if (res.ok) {
       const url = (await res.text()).trim();
+      console.log('[CLOUD SAVE] Cloud URL received:', url);
       if (url.startsWith('http')) {
         const metaCode = url.split('/').pop();
-        return metaCode ? metaCode.replace('.json', '') : null;
+        const cleanCode = metaCode ? metaCode.replace('.json', '') : null;
+        console.log('[CLOUD SAVE] Extracted meta code:', cleanCode);
+        return cleanCode;
       }
+    } else {
+      console.log('[CLOUD SAVE] Response not OK:', res.status, res.statusText);
     }
   } catch (e: any) {
-    console.warn('[CLOUD META SAVE WARN]', e?.message || String(e));
+    console.error('[CLOUD META SAVE ERROR]', e?.message || String(e));
   }
   return null;
 }

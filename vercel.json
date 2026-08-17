@@ -4,8 +4,20 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "/api/:path*"
+      "source": "/api/files/upload",
+      "destination": "/api/files/upload"
+    },
+    {
+      "source": "/api/files/:id",
+      "destination": "/api/files/[id]"
+    },
+    {
+      "source": "/api/files/:id/raw",
+      "destination": "/api/files/[id]/raw"
+    },
+    {
+      "source": "/api/files/history",
+      "destination": "/api/files/history"
     },
     {
       "source": "/f/:path*",

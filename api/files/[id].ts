@@ -22,20 +22,28 @@ async function fetchMetaFromCloud(metaCode: string): Promise<any | null> {
   try {
     const cleanCode = metaCode.endsWith('.json') ? metaCode : `${metaCode}.json`;
     const metaUrl = `https://litter.catbox.moe/${cleanCode}`;
+    console.log('[CLOUD FETCH] Attempting to fetch from:', metaUrl);
+    
     const res = await fetch(metaUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) QRVault/1.0',
       },
-      signal: AbortSignal.timeout(6000),
+      signal: AbortSignal.timeout(10000),
     });
+    
+    console.log('[CLOUD FETCH] Response status:', res.status);
+    
     if (res.ok) {
       const record = await res.json();
+      console.log('[CLOUD FETCH] Successfully parsed JSON, has originalName:', !!record?.originalName);
       if (record && record.originalName) {
         return record;
       }
+    } else {
+      console.log('[CLOUD FETCH] Response not OK:', res.status, res.statusText);
     }
   } catch (e) {
-    console.warn('[CLOUD META FETCH WARN]', e);
+    console.error('[CLOUD META FETCH ERROR]', e);
   }
   return null;
 }
@@ -62,13 +70,19 @@ function writeDB(records: any[]) {
 }
 
 async function findRecord(id: string): Promise<any | null> {
+  console.log('[FIND RECORD] Searching for ID:', id);
+  
   const records = readDB();
   let record = records.find((r) => r.id === id);
-  if (record) return record;
+  if (record) {
+    console.log('[FIND RECORD] Found in local memory');
+    return record;
+  }
 
   // Multi-instance cloud resolver for Vercel serverless instances
   if (id.startsWith('QV_')) {
     const parts = id.split('_');
+    console.log('[FIND RECORD] QV ID detected, parts:', parts);
     if (parts.length >= 2) {
       const metaCode = parts[1];
       console.log(`[CLOUD RESOLVER] Attempting to fetch metadata for code: ${metaCode}`);
@@ -79,10 +93,13 @@ async function findRecord(id: string): Promise<any | null> {
         writeDB(records);
         console.log(`[CLOUD RESOLVER SUCCESS] Resolved file ${id} (${cloudRecord.originalName}) across serverless instances`);
         return cloudRecord;
+      } else {
+        console.log('[CLOUD RESOLVER] Failed to fetch from cloud for code:', metaCode);
       }
     }
   }
 
+  console.log('[FIND RECORD] Record not found in local memory or cloud');
   return null;
 }
 
