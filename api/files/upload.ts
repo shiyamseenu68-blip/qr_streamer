@@ -111,20 +111,28 @@ async function fetchMetaFromCloud(metaCode: string): Promise<any | null> {
   try {
     const cleanCode = metaCode.endsWith('.json') ? metaCode : `${metaCode}.json`;
     const metaUrl = `https://litter.catbox.moe/${cleanCode}`;
+    console.log('[CLOUD FETCH] Attempting to fetch from:', metaUrl);
+    
     const res = await fetch(metaUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) QRVault/1.0',
       },
-      signal: AbortSignal.timeout(6000),
+      signal: AbortSignal.timeout(10000),
     });
+    
+    console.log('[CLOUD FETCH] Response status:', res.status);
+    
     if (res.ok) {
       const record = await res.json();
+      console.log('[CLOUD FETCH] Successfully parsed JSON, has originalName:', !!record?.originalName);
       if (record && record.originalName) {
         return record;
       }
+    } else {
+      console.log('[CLOUD FETCH] Response not OK:', res.status, res.statusText);
     }
   } catch (e) {
-    console.warn('[CLOUD META FETCH WARN]', e);
+    console.error('[CLOUD META FETCH ERROR]', e);
   }
   return null;
 }

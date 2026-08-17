@@ -16,7 +16,7 @@ async function fetchMetaFromCloud(metaCode: string): Promise<any | null> {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) QRVault/1.0',
       },
-      signal: AbortSignal.timeout(6000),
+      signal: AbortSignal.timeout(10000),
     });
     if (res.ok) {
       const record = await res.json();
