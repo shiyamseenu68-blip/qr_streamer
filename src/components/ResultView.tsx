@@ -51,6 +51,14 @@ export const ResultView: React.FC<ResultViewProps> = ({
   const [requireConfirmation, setRequireConfirmation] = useState(file.requireConfirmation);
 
   const fileShareUrl = `${window.location.origin}/f/${file.id}`;
+  
+  console.log('[RESULT VIEW] ============================================');
+  console.log('[RESULT VIEW] File ID:', file.id);
+  console.log('[RESULT VIEW] File ID length:', file.id.length);
+  console.log('[RESULT VIEW] File ID starts with QV_:', file.id.startsWith('QV_'));
+  console.log('[RESULT VIEW] File share URL:', fileShareUrl);
+  console.log('[RESULT VIEW] Current origin:', window.location.origin);
+  console.log('[RESULT VIEW] ============================================');
 
   useEffect(() => {
     let isMounted = true;

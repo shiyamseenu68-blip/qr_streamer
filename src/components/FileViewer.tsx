@@ -32,6 +32,12 @@ interface FileViewerProps {
 }
 
 export const FileViewer: React.FC<FileViewerProps> = ({ fileId, onGoHome }) => {
+  console.log('[FILE VIEWER] ============================================');
+  console.log('[FILE VIEWER] Component mounted with fileId:', fileId);
+  console.log('[FILE VIEWER] FileId length:', fileId.length);
+  console.log('[FILE VIEWER] FileId starts with QV_:', fileId.startsWith('QV_'));
+  console.log('[FILE VIEWER] ============================================');
+  
   const [file, setFile] = useState<FileMetadata | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,12 +64,25 @@ export const FileViewer: React.FC<FileViewerProps> = ({ fileId, onGoHome }) => {
       try {
         setLoading(true);
         setError(null);
+        console.log('[FILE VIEWER] ============================================');
+        console.log('[FILE VIEWER] Fetching file info for ID:', fileId);
+        console.log('[FILE VIEWER] ID length:', fileId.length);
+        console.log('[FILE VIEWER] ID starts with QV_:', fileId.startsWith('QV_'));
+        console.log('[FILE VIEWER] Fetch URL:', `/api/files/${fileId}`);
+        
         const res = await fetch(`/api/files/${fileId}`);
+        console.log('[FILE VIEWER] Response status:', res.status);
+        console.log('[FILE VIEWER] Response content-type:', res.headers.get('content-type'));
+        
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
+          console.error('[FILE VIEWER] Error response:', errData);
           throw new Error(errData.error || 'File not found');
         }
         const data: FileMetadata & { isLimitReached?: boolean } = await res.json();
+        console.log('[FILE VIEWER] File data received:', data);
+        console.log('[FILE VIEWER] ============================================');
+        
         if (isMounted) {
           setFile(data);
           if (!data.requireConfirmation) {
@@ -71,6 +90,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({ fileId, onGoHome }) => {
           }
         }
       } catch (err: any) {
+        console.error('[FILE VIEWER] Fetch error:', err);
         if (isMounted) setError(err.message || 'Error loading file');
       } finally {
         if (isMounted) setLoading(false);

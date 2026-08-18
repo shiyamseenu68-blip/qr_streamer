@@ -70,14 +70,21 @@ function writeDB(records: any[]) {
 }
 
 async function findRecord(id: string): Promise<any | null> {
+  console.log('[FIND RECORD] ============================================');
   console.log('[FIND RECORD] Searching for ID:', id);
+  console.log('[FIND RECORD] ID length:', id.length);
+  console.log('[FIND RECORD] ID starts with QV_:', id.startsWith('QV_'));
   
   const records = readDB();
+  console.log('[FIND RECORD] Local DB has', records.length, 'records');
+  
   let record = records.find((r) => r.id === id);
   if (record) {
     console.log('[FIND RECORD] Found in local memory');
     return record;
   }
+
+  console.log('[FIND RECORD] Not found in local memory, checking cloud...');
 
   // Multi-instance cloud resolver for Vercel serverless instances
   if (id.startsWith('QV_')) {
@@ -97,9 +104,12 @@ async function findRecord(id: string): Promise<any | null> {
         console.log('[CLOUD RESOLVER] Failed to fetch from cloud for code:', metaCode);
       }
     }
+  } else {
+    console.log('[FIND RECORD] ID does not start with QV_, cannot resolve from cloud');
   }
 
   console.log('[FIND RECORD] Record not found in local memory or cloud');
+  console.log('[FIND RECORD] ============================================');
   return null;
 }
 
@@ -122,15 +132,24 @@ export default async function handler(req: any, res: any) {
   try {
     // GET - File info
     if (req.method === 'GET') {
+      console.log('[FILE GET] ============================================');
       console.log('[FILE GET] Request for ID:', id);
+      console.log('[FILE GET] ID length:', id.length);
+      console.log('[FILE GET] ID starts with QV_:', id.startsWith('QV_'));
+      console.log('[FILE GET] Request headers:', JSON.stringify(req.headers));
 
       const record = await findRecord(id);
       
       if (!record) {
+        console.log('[FILE GET] Record not found, returning 404');
         return res.status(404).json({ error: 'File not found' });
       }
 
+      console.log('[FILE GET] Record found:', record.originalName);
       const { base64Data, fileRemoteUrl, ...publicRecord } = record;
+
+      console.log('[FILE GET] Returning success response');
+      console.log('[FILE GET] ============================================');
 
       return res.status(200).json({
         ...publicRecord,

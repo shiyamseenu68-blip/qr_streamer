@@ -281,14 +281,27 @@ export default async function handler(req: any, res: any) {
       console.warn('[UPLOAD META WARN] Meta cloud sync skipped:', e?.message || String(e));
     }
 
-    const finalFileId = metaCode ? `QV_${metaCode}_${generateSecureId(6)}` : fileId;
+    const finalFileId = metaCode ? `QV_${metaCode}_${generateSecureId(6)}` : `QV_${fileId}`;
+    
+    console.log('[UPLOAD] Final file ID determination:');
+    console.log('[UPLOAD] Meta code available:', !!metaCode);
+    console.log('[UPLOAD] Original file ID:', fileId);
+    console.log('[UPLOAD] Final file ID:', finalFileId);
+    console.log('[UPLOAD] Final file ID starts with QV_:', finalFileId.startsWith('QV_'));
+    console.log('[UPLOAD] Cloud storage URL:', fileRemoteUrl);
 
     // Update record with final ID
     record.id = finalFileId;
 
     console.log('[UPLOAD] File stored with ID:', finalFileId, 'MetaCode:', metaCode || 'local');
+    console.log('[UPLOAD] Final ID length:', finalFileId.length);
+    console.log('[UPLOAD] Final ID starts with QV_:', finalFileId.startsWith('QV_'));
+    console.log('[UPLOAD] Record.id after update:', record.id);
 
     const { base64Data: _bd, fileRemoteUrl: _fru, ...publicRecord } = record;
+
+    console.log('[UPLOAD] Returning file record with ID:', publicRecord.id);
+    console.log('[UPLOAD] Response payload:', JSON.stringify({ success: true, file: publicRecord }));
 
     return res.status(200).json({
       success: true,

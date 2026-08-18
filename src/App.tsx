@@ -55,6 +55,13 @@ export default function App() {
   // Check if current route is a Receiver File Page (/f/:id)
   const fileViewerMatch = currentPath.match(/\/f\/([a-zA-Z0-9_-]+)/);
   const activeFileId = fileViewerMatch ? fileViewerMatch[1] : null;
+  
+  console.log('[APP] ============================================');
+  console.log('[APP] Current path:', currentPath);
+  console.log('[APP] File viewer match:', fileViewerMatch);
+  console.log('[APP] Active file ID from URL:', activeFileId);
+  console.log('[APP] Active file ID starts with QV_:', activeFileId?.startsWith('QV_'));
+  console.log('[APP] ============================================');
 
   // Handle Real Upload
   const handleStartUpload = (file: File, settings: ShareSettings) => {
@@ -96,6 +103,7 @@ export default function App() {
           const res = JSON.parse(responseText);
           console.log('[FRONTEND] upload response JSON parsed successfully:', res);
           if (res.success && res.file) {
+            console.log('[FRONTEND] Upload success, file ID:', res.file.id);
             setUploadPhase('processing');
             setUploadProgress(92);
 
@@ -105,6 +113,7 @@ export default function App() {
 
               setTimeout(() => {
                 const newFile: FileMetadata = res.file;
+                console.log('[FRONTEND] Setting created file with ID:', newFile.id);
                 setCreatedFile(newFile);
 
                 // Add to local history
