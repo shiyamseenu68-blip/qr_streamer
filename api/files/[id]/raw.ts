@@ -60,7 +60,10 @@ function writeDB(records: any[]) {
 }
 
 async function findRecord(id: string): Promise<any | null> {
+  console.log('[FIND RECORD RAW] ============================================');
   console.log('[FIND RECORD RAW] Searching for ID:', id);
+  console.log('[FIND RECORD RAW] ID length:', id.length);
+  console.log('[FIND RECORD RAW] ID starts with QV_:', id.startsWith('QV_'));
   
   const records = readDB();
   let record = records.find((r) => r.id === id);
@@ -68,6 +71,8 @@ async function findRecord(id: string): Promise<any | null> {
     console.log('[FIND RECORD RAW] Found in local memory');
     return record;
   }
+
+  console.log('[FIND RECORD RAW] Not found in local memory, checking cloud...');
 
   // Multi-instance cloud resolver for Vercel serverless instances
   if (id.startsWith('QV_')) {
@@ -85,11 +90,16 @@ async function findRecord(id: string): Promise<any | null> {
         return cloudRecord;
       } else {
         console.log('[CLOUD RESOLVER RAW] Failed to fetch from cloud for code:', metaCode);
+        console.log('[CLOUD RESOLVER RAW] This suggests cloud storage may have failed during upload');
       }
     }
+  } else {
+    console.log('[FIND RECORD RAW] ID does not start with QV_, cannot resolve from cloud');
+    console.log('[FIND RECORD RAW] This is expected for files uploaded when cloud storage failed');
   }
 
   console.log('[FIND RECORD RAW] Record not found in local memory or cloud');
+  console.log('[FIND RECORD RAW] ============================================');
   return null;
 }
 

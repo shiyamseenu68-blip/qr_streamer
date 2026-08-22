@@ -277,18 +277,23 @@ export default async function handler(req: any, res: any) {
     let metaCode: string | null = null;
     try {
       metaCode = await saveMetaToCloud(record);
+      console.log('[UPLOAD] Cloud metadata upload result:', metaCode ? 'SUCCESS' : 'FAILED');
     } catch (e: any) {
-      console.warn('[UPLOAD META WARN] Meta cloud sync skipped:', e?.message || String(e));
+      console.error('[UPLOAD META ERROR] Meta cloud sync failed:', e?.message || String(e));
     }
 
-    const finalFileId = metaCode ? `QV_${metaCode}_${generateSecureId(6)}` : `QV_${fileId}`;
+    // Use QV_ prefix only if cloud storage succeeded
+    // If cloud storage failed, use plain ID (single-instance only)
+    const finalFileId = metaCode ? `QV_${metaCode}_${generateSecureId(6)}` : fileId;
     
     console.log('[UPLOAD] Final file ID determination:');
-    console.log('[UPLOAD] Meta code available:', !!metaCode);
+    console.log('[UPLOAD] Meta code:', metaCode);
     console.log('[UPLOAD] Original file ID:', fileId);
     console.log('[UPLOAD] Final file ID:', finalFileId);
     console.log('[UPLOAD] Final file ID starts with QV_:', finalFileId.startsWith('QV_'));
     console.log('[UPLOAD] Cloud storage URL:', fileRemoteUrl);
+    console.log('[UPLOAD] Cloud resolution enabled:', !!metaCode);
+    console.log('[UPLOAD] Single-instance mode:', !metaCode);
 
     // Update record with final ID
     record.id = finalFileId;

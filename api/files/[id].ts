@@ -102,10 +102,12 @@ async function findRecord(id: string): Promise<any | null> {
         return cloudRecord;
       } else {
         console.log('[CLOUD RESOLVER] Failed to fetch from cloud for code:', metaCode);
+        console.log('[CLOUD RESOLVER] This suggests cloud storage may have failed during upload');
       }
     }
   } else {
     console.log('[FIND RECORD] ID does not start with QV_, cannot resolve from cloud');
+    console.log('[FIND RECORD] This is expected for files uploaded when cloud storage failed');
   }
 
   console.log('[FIND RECORD] Record not found in local memory or cloud');
